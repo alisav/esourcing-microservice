@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +43,15 @@ namespace ESourcing.Sourcing
 
             services.AddAutoMapper(typeof(Startup));
 
-
+            #region Swagger Dependencies
+            services.AddSwaggerGen(s => {
+                s.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "ESourcing.Sourcing",
+                    Version = "v1"
+                });
+            });
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
