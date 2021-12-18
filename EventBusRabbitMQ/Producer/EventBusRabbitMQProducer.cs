@@ -20,8 +20,7 @@ namespace EventBusRabbitMQ.Producer
         private readonly ILogger<EventBusRabbitMQProducer> _logger;
         private readonly int _retryCount;
 
-        public EventBusRabbitMQProducer(IRabbitMQPersistentConnection persistentConnection, 
-            ILogger<EventBusRabbitMQProducer> logger, int retryCount)
+        public EventBusRabbitMQProducer(IRabbitMQPersistentConnection persistentConnection, ILogger<EventBusRabbitMQProducer> logger, int retryCount = 5)
         {
             _persistentConnection = persistentConnection;
             _logger = logger;
@@ -30,7 +29,7 @@ namespace EventBusRabbitMQ.Producer
 
         public void Publish(string queueName, IEvent @event)
         {
-            if(!_persistentConnection.IsConnected)
+            if (!_persistentConnection.IsConnected)
             {
                 _persistentConnection.TryConnect();
             }
@@ -39,13 +38,12 @@ namespace EventBusRabbitMQ.Producer
             .Or<SocketException>()
             .WaitAndRetry(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
             {
-                _logger.LogWarning(ex, "Could not publish event: {EventId} after {Timeout}s ({ExceptionMessage})", 
-                    @event.RequestId, $"{time.TotalSeconds:n1}", ex.Message);
+                _logger.LogWarning(ex, "Could not publish event: {EventId} after {Timeout}s ({ExceptionMessage})", @event.RequestId, $"{time.TotalSeconds:n1}", ex.Message);
             });
 
             using (var channel = _persistentConnection.CreateModel())
             {
-                channel.QueueDeclare(queueName, false, false, false, null);
+                channel.QueueDeclare(queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
                 var message = JsonConvert.SerializeObject(@event);
                 var body = Encoding.UTF8.GetBytes(message);
 

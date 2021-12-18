@@ -17,7 +17,7 @@ namespace ESourcing.Sourcing.Controllers
 
         public BidController(IBidRepository bidRepository)
         {
-            _bidRepository = bidRepository;      
+            _bidRepository = bidRepository;
         }
 
         [HttpPost]
@@ -25,6 +25,7 @@ namespace ESourcing.Sourcing.Controllers
         public async Task<ActionResult> SendBid([FromBody] Bid bid)
         {
             await _bidRepository.SendBid(bid);
+
             return Ok();
         }
 
@@ -33,14 +34,16 @@ namespace ESourcing.Sourcing.Controllers
         public async Task<ActionResult<IEnumerable<Bid>>> GetBidByAuctionId(string id)
         {
             IEnumerable<Bid> bids = await _bidRepository.GetBidsByAuctionId(id);
+
             return Ok(bids);
         }
 
         [HttpGet("GetAllBidsByAuctionId")]
-        [ProducesResponseType(typeof(IEnumerable<Bid>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<Bid>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<IEnumerable<Bid>>> GetAllBidsByAuctionId(string id)
         {
             IEnumerable<Bid> bids = await _bidRepository.GetAllBidsByAuctionId(id);
+
             return Ok(bids);
         }
 
@@ -49,6 +52,7 @@ namespace ESourcing.Sourcing.Controllers
         public async Task<ActionResult<Bid>> GetWinnerBid(string id)
         {
             Bid bid = await _bidRepository.GetWinnerBid(id);
+
             return Ok(bid);
         }
     }

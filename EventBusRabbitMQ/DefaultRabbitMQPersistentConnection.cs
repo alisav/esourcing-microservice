@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace EventBusRabbitMQ
 {
-    class DefaultRabbitMQPersistentConnection : IRabbitMQPersistentConnection
+    public class DefaultRabbitMQPersistentConnection : IRabbitMQPersistentConnection
     {
         private IConnection _connection;
         private bool _disposed;
