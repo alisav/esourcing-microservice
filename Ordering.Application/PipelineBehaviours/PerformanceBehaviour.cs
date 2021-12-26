@@ -15,9 +15,9 @@ namespace Ordering.Application.PipelineBehaviours
         private readonly Stopwatch _timer;
         private readonly ILogger<TRequest> _logger;
 
-        public PerformanceBehaviour(Stopwatch timer, ILogger<TRequest> logger)
+        public PerformanceBehaviour(ILogger<TRequest> logger)
         {
-            _timer = timer;
+            _timer = new Stopwatch(); ;
             _logger = logger;
         }
 
@@ -30,7 +30,7 @@ namespace Ordering.Application.PipelineBehaviours
 
             var elapsedMilliseconds = _timer.ElapsedMilliseconds;
 
-            if(elapsedMilliseconds > 500)
+            if(elapsedMilliseconds > 111500)
             {
                 var requestName = typeof(TRequest).Name;
 

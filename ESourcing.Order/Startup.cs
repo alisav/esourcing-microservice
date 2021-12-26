@@ -1,4 +1,5 @@
 using ESourcing.Order.Consumers;
+using ESourcing.Order.Extensions;
 using EventBusRabbitMQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -93,10 +94,12 @@ namespace ESourcing.Order
                 endpoints.MapControllers();
             });
 
+            app.UserRabbitListener();
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v11/swagger.json", "Order API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Order API V1");
             });
         }
     }

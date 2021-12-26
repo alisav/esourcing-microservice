@@ -23,12 +23,12 @@ namespace ESourcing.Order.Extensions
 
         private static void OnStopping()
         {
-            Listener.Consume();
+            Listener.Disconnect();
         }
 
         private static void OnStarted()
         {
-            Listener.Disconnect();
+            Listener.Consume();
         }
     }
 }
