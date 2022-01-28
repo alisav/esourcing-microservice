@@ -1,8 +1,4 @@
-using ESourcing.Sourcing.Data;
-using ESourcing.Sourcing.Data.Interface;
-using ESourcing.Sourcing.Repositories;
-using ESourcing.Sourcing.Repositories.Interfaces;
-using ESourcing.Sourcing.Settings;
+
 using EventBusRabbitMQ;
 using EventBusRabbitMQ.Producer;
 using Microsoft.AspNetCore.Builder;
@@ -15,12 +11,15 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using RabbitMQ.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using AutoMapper;
+using Esourcing.Sourcing.Hubs;
+using ESourcing.Sourcing.Settings;
+using ESourcing.Sourcing.Repositories.Interfaces;
+using ESourcing.Sourcing.Data;
+using ESourcing.Sourcing.Repositories;
+using ESourcing.Sourcing.Data.Interface;
 
-namespace ESourcing.Sourcing
+namespace Esourcing.Sourcing
 {
     public class Startup
     {
@@ -34,7 +33,6 @@ namespace ESourcing.Sourcing
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
 
             services.Configure<SourcingDatabaseSettings>(Configuration.GetSection(nameof(SourcingDatabaseSettings)));
@@ -96,19 +94,35 @@ namespace ESourcing.Sourcing
             services.AddSingleton<EventBusRabbitMQProducer>();
 
             #endregion
+
+            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials()
+                        .WithOrigins("https://localhost:44398");
+            }));
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<AuctionHub>("/auctionhub");
                 endpoints.MapControllers();
             });
 
